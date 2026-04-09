@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Memory Simulator — Visualizer</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- ── Header ──────────────────────────────────────────── -->
+  <header>
+    <div class="logo">MEM<span class="accent">SIM</span></div>
+    <div class="subtitle">Memory Allocation &amp; GC Visualizer</div>
+    <div class="strategy-badge" id="strategyBadge">First Fit</div>
+  </header>
+
+  <!-- ── Main Layout ─────────────────────────────────────── -->
+  <main>
+
+    <!-- Left: Controls -->
+    <aside class="panel" id="controlPanel">
+
+      <section class="control-section">
+        <h3 class="section-label">⚙ HEAP SETUP</h3>
+        <label>Heap size (bytes)
+          <input type="number" id="heapSizeInput" value="200" min="8" max="100000"/>
+        </label>
+        <label>Strategy
+          <select id="strategySelect">
+            <option value="firstfit">First Fit</option>
+            <option value="bestfit">Best Fit</option>
+            <option value="worstfit">Worst Fit</option>
+          </select>
+        </label>
+        <button class="btn btn-primary" onclick="initHeap()">Initialize Heap</button>
+      </section>
+
+      <section class="control-section">
+        <h3 class="section-label">➕ ALLOCATE</h3>
+        <label>Size (bytes)
+          <input type="number" id="allocSize" value="20" min="1"/>
+        </label>
+        <button class="btn btn-green" onclick="doAllocate()">Allocate</button>
+      </section>
+
+      <section class="control-section">
+        <h3 class="section-label">✖ FREE</h3>
+        <label>Object ID
+          <input type="number" id="freeId" value="" placeholder="e.g. 1"/>
+        </label>
+        <button class="btn btn-red" onclick="doFree()">Free Object</button>
+      </section>
+
+      <section class="control-section">
+        <h3 class="section-label">♻ GARBAGE COLLECTION</h3>
+        <label>Reachable IDs (comma-separated)
+          <input type="text" id="gcRoots" placeholder="e.g. 1, 3"/>
+        </label>
+        <div class="btn-row">
+          <button class="btn btn-yellow" onclick="doMark()">Mark</button>
+          <button class="btn btn-yellow" onclick="doSweep()">Sweep</button>
+          <button class="btn btn-orange" onclick="doGC()">Full GC</button>
+        </div>
+      </section>
+
+      <section class="control-section">
+        <h3 class="section-label">💾 FILE I/O</h3>
+        <button class="btn btn-ghost" onclick="doSave()">Save Snapshot</button>
+        <button class="btn btn-ghost" onclick="doLoad()">Load Snapshot</button>
+      </section>
+
+    </aside>
+
+    <!-- Right: Visualizer + Log -->
+    <div class="right-col">
+
+      <!-- Stats Bar -->
+      <div class="stats-bar">
+        <div class="stat">
+          <span class="stat-label">TOTAL</span>
+          <span class="stat-value" id="statTotal">—</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">USED</span>
+          <span class="stat-value accent" id="statUsed">—</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">FREE</span>
+          <span class="stat-value green" id="statFree">—</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">BLOCKS</span>
+          <span class="stat-value" id="statBlocks">—</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">FRAG %</span>
+          <span class="stat-value yellow" id="statFrag">—</span>
+        </div>
+      </div>
+
+      <!-- Heap Bar -->
+      <div class="heap-section">
+        <h3 class="section-label">HEAP MAP</h3>
+        <div class="heap-bar" id="heapBar">
+          <div class="heap-placeholder">Initialize a heap to begin</div>
+        </div>
+        <div class="heap-legend">
+          <span class="legend-item free">■ Free</span>
+          <span class="legend-item used">■ Used</span>
+          <span class="legend-item marked">■ Marked (GC root)</span>
+        </div>
+      </div>
+
+      <!-- Block Table -->
+      <div class="block-table-section">
+        <h3 class="section-label">BLOCK DETAIL</h3>
+        <div class="table-wrap">
+          <table id="blockTable">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Address</th>
+                <th>Size</th>
+                <th>State</th>
+                <th>Object ID</th>
+                <th>GC Mark</th>
+              </tr>
+            </thead>
+            <tbody id="blockTbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Activity Log -->
+      <div class="log-section">
+        <div class="log-header">
+          <h3 class="section-label">ACTIVITY LOG</h3>
+          <button class="btn-tiny" onclick="clearLog()">Clear</button>
+        </div>
+        <div class="log-box" id="logBox"></div>
+      </div>
+
+    </div>
+  </main>
+
+  <script src="simulator.js"></script>
+</body>
+</html>
