@@ -9,14 +9,13 @@ import {
 
 const BCRYPT_COST = 12;
 const MAX_FAILED_ATTEMPTS = 5;
-const LOCKOUT_MS = 15 * 60 * 1000; // 15 minutes
+const LOCKOUT_MS = 15 * 60 * 1000; 
 
 function setAuthCookies(res, user) {
   res.cookie('access_token', signAccessToken(user), cookieOptions.access);
   res.cookie('refresh_token', signRefreshToken(user), cookieOptions.refresh);
 }
 
-// Only ever send these fields to the client - never password_hash, attempt counters, etc.
 function toPublicUser(row) {
   return {
     id: row.id,
@@ -26,7 +25,7 @@ function toPublicUser(row) {
   };
 }
 
-// ── POST /api/auth/signup ──────────────────────────────────────
+// ── POST /api/auth/signup ──
 export async function signup(req, res, next) {
   try {
     const { username, email, password } = req.validated;

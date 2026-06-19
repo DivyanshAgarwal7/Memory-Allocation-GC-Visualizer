@@ -16,7 +16,7 @@ const db = new Database(resolvedPath);
 db.pragma('journal_mode = WAL');
 db.pragma('foreign_keys = ON');
 
-// ── Schema ──────────────────────────────────────────────────────
+// ── Schema ────
 db.exec(`
   CREATE TABLE IF NOT EXISTS users (
     id              INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -29,7 +29,7 @@ db.exec(`
   );
 `);
 
-// ── Prepared statements (parameterized — never string-concatenated) ──
+// ── Prepared statements (parameterized — never string-concatenated) ─
 export const queries = {
   findByEmail:        db.prepare('SELECT * FROM users WHERE email = ?'),
   findByUsername:     db.prepare('SELECT * FROM users WHERE username = ?'),
