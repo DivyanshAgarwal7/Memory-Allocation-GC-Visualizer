@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MEM SIM — Memory Allocation &amp; GC Simulator</title>
+  <meta name="description" content="Watch heap allocation strategies and mark-and-sweep garbage collection happen live, right in your browser." />
+  <link rel="stylesheet" href="css/site.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- ── Nav ──────────────────────────────────────────── -->
+  <nav class="nav">
+    <div class="container">
+      <a href="landing.html" class="logo">MEM<span class="accent">SIM</span></a>
+      <ul class="nav-links">
+        <li><a href="#features">Features</a></li>
+        <li><a href="#how-it-works">How it works</a></li>
+        <li><a href="login.html">Sign in</a></li>
+      </ul>
+      <div class="nav-actions">
+        <a href="signup.html" class="btn btn-primary">Create account</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <!-- ── Hero ───────────────────────────────────────── -->
+    <section class="hero">
+      <div class="container">
+        <div>
+          <span class="hero-tag"><span class="dot"></span> LIVE HEAP SIMULATION</span>
+          <h1>See exactly what happens<br />inside a <span class="accent">heap</span>.</h1>
+          <p class="lead">
+            Allocate blocks, run mark-and-sweep garbage collection, and watch
+            fragmentation build and clear — live, with First Fit, Best Fit,
+            and Worst Fit strategies side by side.
+          </p>
+          <div class="hero-actions">
+            <a href="signup.html" class="btn btn-primary">Create account</a>
+            <a href="login.html" class="btn btn-ghost">Sign in</a>
+          </div>
+          <p class="hero-caption">Free to use. Your saved runs stay tied to your account.</p>
+        </div>
+
+        <!-- Signature 3D animation: floating memory blocks cycling
+             through free -> allocated -> marked -> freed -->
+        <div class="heap-field" aria-hidden="true">
+          <div class="heap-field__inner">
+            <div class="mem-block" data-size="92px" data-tx="-170px" data-ty="-130px" data-tz="40px" data-rot="-6deg" data-dur="9s" data-float-delay="-1s" data-cycle-delay="-2s">
+              <span class="mem-block__addr">0x00</span>
+            </div>
+            <div class="mem-block" data-size="70px" data-tx="-10px" data-ty="-180px" data-tz="-70px" data-rot="4deg" data-dur="7s" data-float-delay="-3s" data-cycle-delay="-8s">
+              <span class="mem-block__addr">0x1C</span>
+            </div>
+            <div class="mem-block" data-size="84px" data-tx="160px" data-ty="-110px" data-tz="90px" data-rot="-3deg" data-dur="10s" data-float-delay="-5s" data-cycle-delay="-14s">
+              <span class="mem-block__addr">0x34</span>
+            </div>
+            <div class="mem-block" data-size="76px" data-tx="-190px" data-ty="30px" data-tz="-40px" data-rot="7deg" data-dur="8s" data-float-delay="-2s" data-cycle-delay="-5s">
+              <span class="mem-block__addr">0x50</span>
+            </div>
+            <div class="mem-block" data-size="124px" data-tx="0px" data-ty="10px" data-tz="130px" data-rot="0deg" data-dur="11s" data-float-delay="0s" data-cycle-delay="-11s">
+              <span class="mem-block__addr">0x6E</span>
+            </div>
+            <div class="mem-block" data-size="80px" data-tx="190px" data-ty="40px" data-tz="-100px" data-rot="-5deg" data-dur="7.5s" data-float-delay="-4s" data-cycle-delay="-17s">
+              <span class="mem-block__addr">0x9A</span>
+            </div>
+            <div class="mem-block" data-size="96px" data-tx="-140px" data-ty="170px" data-tz="60px" data-rot="5deg" data-dur="9.5s" data-float-delay="-6s" data-cycle-delay="-3s">
+              <span class="mem-block__addr">0xB2</span>
+            </div>
+            <div class="mem-block" data-size="68px" data-tx="40px" data-ty="190px" data-tz="-60px" data-rot="-7deg" data-dur="6.5s" data-float-delay="-1.5s" data-cycle-delay="-9s">
+              <span class="mem-block__addr">0xCE</span>
+            </div>
+            <div class="mem-block" data-size="88px" data-tx="170px" data-ty="160px" data-tz="20px" data-rot="3deg" data-dur="8.5s" data-float-delay="-3.5s" data-cycle-delay="-15s">
+              <span class="mem-block__addr">0xE0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Features ───────────────────────────────────── -->
+    <section class="section" id="features">
+      <div class="container">
+        <div class="section-head">
+          <div class="kicker">What you can explore</div>
+          <h2>Three strategies. One heap.</h2>
+          <p>Run the same sequence of allocations through each strategy and compare how the heap ends up.</p>
+        </div>
+        <div class="card-grid">
+          <div class="card">
+            <div class="card-marker">FIT</div>
+            <h3>First, Best &amp; Worst Fit</h3>
+            <p>Switch strategies and watch identical allocation requests carve up memory differently — and leave different leftovers behind.</p>
+          </div>
+          <div class="card">
+            <div class="card-marker">GC</div>
+            <h3>Mark &amp; Sweep</h3>
+            <p>Choose which objects are still reachable from your roots. Sweep reclaims everything else in a single pass.</p>
+          </div>
+          <div class="card">
+            <div class="card-marker">%</div>
+            <h3>Fragmentation analytics</h3>
+            <p>A live fragmentation percentage updates as blocks split, free, and coalesce — so you can see the cost of each strategy.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── How it works (real lifecycle, not decorative numbers) ── -->
+    <section class="section" id="how-it-works">
+      <div class="container">
+        <div class="section-head">
+          <div class="kicker">The GC lifecycle</div>
+          <h2>Every run follows the same three steps.</h2>
+          <p>This is the actual loop the simulator runs — the same one your operating system runs, just slowed down and made visible.</p>
+        </div>
+        <div class="card-grid">
+          <div class="card">
+            <div class="card-marker">01</div>
+            <h3>Allocate</h3>
+            <p>Request a number of bytes. The active strategy picks a free block and splits off any leftover space.</p>
+          </div>
+          <div class="card">
+            <div class="card-marker">02</div>
+            <h3>Mark &amp; Sweep</h3>
+            <p>Mark which objects are still reachable. Sweep frees every used block that wasn't marked.</p>
+          </div>
+          <div class="card">
+            <div class="card-marker">03</div>
+            <h3>Coalesce</h3>
+            <p>Adjacent free blocks merge automatically, undoing fragmentation before the next allocation.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ── Footer ─────────────────────────────────────── -->
+  <footer class="site-footer">
+    <div class="container">
+      <p>MEM SIM — built to make heap internals visible.</p>
+      <ul class="nav-links">
+        <li><a href="login.html">Sign in</a></li>
+        <li><a href="signup.html">Create account</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <script type="module" src="js/heap-field.js"></script>
+</body>
+</html>

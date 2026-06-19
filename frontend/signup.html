@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create account — MEM SIM</title>
+  <link rel="stylesheet" href="css/site.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet" />
+</head>
+<body class="auth-shell">
+
+  <main class="auth-main">
+    <div class="auth-bg">
+      <div class="heap-field" aria-hidden="true">
+        <div class="heap-field__inner">
+          <div class="mem-block" data-size="92px" data-tx="-170px" data-ty="-130px" data-tz="40px" data-rot="-6deg" data-dur="9s" data-float-delay="-1s" data-cycle-delay="-2s"><span class="mem-block__addr">0x00</span></div>
+          <div class="mem-block" data-size="70px" data-tx="-10px" data-ty="-180px" data-tz="-70px" data-rot="4deg" data-dur="7s" data-float-delay="-3s" data-cycle-delay="-8s"><span class="mem-block__addr">0x1C</span></div>
+          <div class="mem-block" data-size="84px" data-tx="160px" data-ty="-110px" data-tz="90px" data-rot="-3deg" data-dur="10s" data-float-delay="-5s" data-cycle-delay="-14s"><span class="mem-block__addr">0x34</span></div>
+          <div class="mem-block" data-size="76px" data-tx="-190px" data-ty="30px" data-tz="-40px" data-rot="7deg" data-dur="8s" data-float-delay="-2s" data-cycle-delay="-5s"><span class="mem-block__addr">0x50</span></div>
+          <div class="mem-block" data-size="124px" data-tx="0px" data-ty="10px" data-tz="130px" data-rot="0deg" data-dur="11s" data-float-delay="0s" data-cycle-delay="-11s"><span class="mem-block__addr">0x6E</span></div>
+          <div class="mem-block" data-size="80px" data-tx="190px" data-ty="40px" data-tz="-100px" data-rot="-5deg" data-dur="7.5s" data-float-delay="-4s" data-cycle-delay="-17s"><span class="mem-block__addr">0x9A</span></div>
+          <div class="mem-block" data-size="96px" data-tx="-140px" data-ty="170px" data-tz="60px" data-rot="5deg" data-dur="9.5s" data-float-delay="-6s" data-cycle-delay="-3s"><span class="mem-block__addr">0xB2</span></div>
+          <div class="mem-block" data-size="68px" data-tx="40px" data-ty="190px" data-tz="-60px" data-rot="-7deg" data-dur="6.5s" data-float-delay="-1.5s" data-cycle-delay="-9s"><span class="mem-block__addr">0xCE</span></div>
+          <div class="mem-block" data-size="88px" data-tx="170px" data-ty="160px" data-tz="20px" data-rot="3deg" data-dur="8.5s" data-float-delay="-3.5s" data-cycle-delay="-15s"><span class="mem-block__addr">0xE0</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="auth-card">
+      <a href="landing.html" class="logo">MEM<span class="accent">SIM</span></a>
+      <h1>Create your account</h1>
+      <p class="auth-subtitle">Save your simulation runs and pick up later.</p>
+
+      <div id="form-alert" class="form-alert" role="alert" aria-live="polite"></div>
+
+      <form id="signup-form" novalidate>
+        <div class="field">
+          <label for="username">Username</label>
+          <input type="text" id="username" name="username" autocomplete="username" required minlength="3" maxlength="30" />
+          <span class="field-error" id="error-username"></span>
+        </div>
+
+        <div class="field">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" autocomplete="email" required maxlength="254" />
+          <span class="field-error" id="error-email"></span>
+        </div>
+
+        <div class="field">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" autocomplete="new-password" required minlength="8" maxlength="72" />
+          <span class="field-hint">At least 8 characters, with an uppercase letter, a lowercase letter, and a number.</span>
+          <span class="field-error" id="error-password"></span>
+        </div>
+
+        <div class="field">
+          <label for="confirmPassword">Confirm password</label>
+          <input type="password" id="confirmPassword" name="confirmPassword" autocomplete="new-password" required minlength="8" maxlength="72" />
+          <span class="field-error" id="error-confirmPassword"></span>
+        </div>
+
+        <button type="submit" id="submit-btn" class="btn btn-primary btn-block">Create account</button>
+      </form>
+
+      <p class="auth-footer">Already have an account? <a href="login.html">Sign in</a></p>
+    </div>
+  </main>
+
+  <script type="module" src="js/heap-field.js"></script>
+  <script type="module" src="js/signup.js"></script>
+</body>
+</html>

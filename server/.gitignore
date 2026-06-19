@@ -1,0 +1,12 @@
+node_modules/
+.env
+.env.local
+.env.*.local
+
+# Local SQLite database + WAL files
+data/*.db
+data/*.db-journal
+data/*.db-wal
+data/*.db-shm
+
+*.log

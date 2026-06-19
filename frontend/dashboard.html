@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — MEM SIM</title>
+  <link rel="stylesheet" href="css/site.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <nav class="nav">
+    <div class="container">
+      <a href="landing.html" class="logo">MEM<span class="accent">SIM</span></a>
+      <ul class="nav-links">
+        <li><a href="index.html">Simulator</a></li>
+      </ul>
+      <div class="nav-actions">
+        <button id="logout-btn" class="btn btn-ghost">Sign out</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="dash-main">
+    <div class="dash-header">
+      <h1>Welcome back, <span id="dash-username">…</span></h1>
+    </div>
+
+    <div class="dash-empty">
+      <strong>No saved simulations yet</strong>
+      Saving heap snapshots to your account is coming soon. For now, open the
+      simulator and explore allocation strategies and garbage collection.
+    </div>
+
+    <div class="dash-actions">
+      <a href="index.html" class="btn btn-primary">Open simulator</a>
+    </div>
+  </main>
+
+  <script type="module" src="js/dashboard.js"></script>
+</body>
+</html>
