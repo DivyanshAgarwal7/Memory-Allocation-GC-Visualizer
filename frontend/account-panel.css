@@ -1,0 +1,115 @@
+/* ─────────────────────────────────────────────────────────
+   account-panel.css
+   Styles for the auth status pill (header) and the "MY ACCOUNT"
+   control panel section. Reuses the CSS variables already
+   defined in style.css - no new design tokens introduced.
+───────────────────────────────────────────────────────── */
+
+.auth-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 11px;
+}
+
+.auth-status a {
+  color: var(--text-dim);
+  text-decoration: none;
+}
+.auth-status a:hover { color: var(--accent); }
+
+.auth-status .username {
+  color: var(--text);
+  font-weight: 700;
+}
+
+.auth-status .btn-tiny {
+  font-family: var(--font-mono);
+}
+
+/* Base .btn-tiny styling, self-contained here so it also works on pages
+   (like dashboard.html) that don't load the simulator's style.css. */
+.btn-tiny {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  padding: 4px 10px;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+.btn-tiny:hover { border-color: var(--text-dim); color: var(--text); }
+
+/* ── Account section ───────────────────────────────────── */
+#accountSection .save-row {
+  display: flex;
+  gap: 6px;
+}
+#accountSection .save-row input {
+  flex: 1;
+}
+
+.account-signed-out {
+  font-size: 11px;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+.account-signed-out a { color: var(--accent); }
+
+.saved-sim-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 10px;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.saved-sim-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface2);
+}
+
+.saved-sim-item .meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.saved-sim-item .name {
+  font-size: 11px;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.saved-sim-item .timestamp {
+  font-size: 9px;
+  color: var(--text-dim);
+}
+
+.saved-sim-item .actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.saved-sim-empty {
+  font-size: 11px;
+  color: var(--text-dim);
+  text-align: center;
+  padding: 12px 0;
+}
+
+.account-limit-note {
+  font-size: 10px;
+  color: var(--text-dim);
+  margin-top: 6px;
+}

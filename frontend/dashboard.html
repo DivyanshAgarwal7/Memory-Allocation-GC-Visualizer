@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dashboard — MEM SIM</title>
   <link rel="stylesheet" href="css/site.css" />
+  <link rel="stylesheet" href="account-panel.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet" />
@@ -28,10 +29,8 @@
       <h1>Welcome back, <span id="dash-username">…</span></h1>
     </div>
 
-    <div class="dash-empty">
-      <strong>No saved simulations yet</strong>
-      Saving heap snapshots to your account is coming soon. For now, open the
-      simulator and explore allocation strategies and garbage collection.
+    <div id="dash-sims-container">
+      <p class="account-signed-out">Loading your saved simulations…</p>
     </div>
 
     <div class="dash-actions">

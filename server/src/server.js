@@ -7,6 +7,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 import authRoutes from './auth/auth.routes.js';
+import simulationsRoutes from './simulations/simulations.routes.js';
 import { generalLimiter } from './middleware/rateLimit.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -47,15 +48,18 @@ app.use(
   })
 );
 
-// ── Body parsing & cookies ─────────────────────────────────────
-app.use(express.json({ limit: '10kb' }));
+// ── Cookies ──────────────────────────────────────────────────────
 app.use(cookieParser());
 
 // ── Rate limiting for all API routes ────────────────────────────
 app.use('/api', generalLimiter);
 
 // ── Routes ───────────────────────────────────────────────────────
-app.use('/api/auth', authRoutes);
+// Body size limit is set per route group, not globally: auth payloads
+// are tiny (10kb is generous), but a saved heap snapshot with many
+// blocks needs more room. Each router only gets the limit it needs.
+app.use('/api/auth', express.json({ limit: '10kb' }), authRoutes);
+app.use('/api/simulations', express.json({ limit: '256kb' }), simulationsRoutes);
 
 // Unknown API routes -> JSON 404 (don't fall through to static handler)
 app.use('/api', (req, res) => res.status(404).json({ error: 'Not found.' }));
