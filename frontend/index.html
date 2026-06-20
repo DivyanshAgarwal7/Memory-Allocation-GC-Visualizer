@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Memory Simulator — Visualizer</title>
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="account-panel.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
 </head>
@@ -15,6 +16,7 @@
     <div class="logo">MEM<span class="accent">SIM</span></div>
     <div class="subtitle">Memory Allocation &amp; GC Visualizer</div>
     <div class="strategy-badge" id="strategyBadge">First Fit</div>
+    <div class="auth-status" id="authStatus"></div>
   </header>
 
   <!-- ── Main Layout ─────────────────────────────────────── -->
@@ -70,6 +72,11 @@
         <h3 class="section-label">💾 FILE I/O</h3>
         <button class="btn btn-ghost" onclick="doSave()">Save Snapshot</button>
         <button class="btn btn-ghost" onclick="doLoad()">Load Snapshot</button>
+      </section>
+
+      <section class="control-section" id="accountSection">
+        <h3 class="section-label">👤 MY ACCOUNT</h3>
+        <div id="accountPanelBody"></div>
       </section>
 
     </aside>
@@ -147,5 +154,6 @@
   </main>
 
   <script src="simulator.js"></script>
+  <script src="account-panel.js"></script>
 </body>
 </html>
