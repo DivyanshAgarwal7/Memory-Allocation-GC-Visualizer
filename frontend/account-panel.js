@@ -11,6 +11,33 @@
 
 'use strict';
 
+// ── Wire up the simulator's own buttons ──────────────────────────
+// index.html used to call these via inline onclick="..." attributes.
+// The server's CSP (script-src 'self', no 'unsafe-inline') silently
+// blocks inline event handlers, so the buttons stopped working once
+// helmet was added. Fix: bind them here via addEventListener instead -
+// same global functions from simulator.js, just CSP-compliant wiring.
+// simulator.js itself is still not modified.
+function wireSimulatorButtons() {
+  const bindings = [
+    ['initHeapBtn', () => initHeap()],
+    ['allocateBtn', () => doAllocate()],
+    ['freeBtn', () => doFree()],
+    ['markBtn', () => doMark()],
+    ['sweepBtn', () => doSweep()],
+    ['fullGcBtn', () => doGC()],
+    ['saveSnapshotBtn', () => doSave()],
+    ['loadSnapshotBtn', () => doLoad()],
+    ['clearLogBtn', () => clearLog()],
+  ];
+
+  bindings.forEach(([id, handler]) => {
+    const button = document.getElementById(id);
+    if (button) button.addEventListener('click', handler);
+  });
+}
+wireSimulatorButtons();
+
 const ACCOUNT_MAX_SIMULATIONS = 20;
 
 // ── Minimal fetch helpers (deliberately self-contained - this is a
