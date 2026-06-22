@@ -29,6 +29,17 @@ export const createSimulationSchema = z.object({
   data: heapDataSchema,
 });
 
+// For PUT /api/simulations/:id - rename, overwrite the saved data, or both.
+// At least one of the two must be present.
+export const updateSimulationSchema = z
+  .object({
+    name: z.string().trim().min(1, 'Name is required.').max(60, 'Name must be at most 60 characters.').optional(),
+    data: heapDataSchema.optional(),
+  })
+  .refine((val) => val.name !== undefined || val.data !== undefined, {
+    message: 'Provide a new name and/or data to update.',
+  });
+
 export const idParamSchema = z.object({
   id: z.coerce.number().int().positive(),
 });

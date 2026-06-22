@@ -302,6 +302,7 @@ img, svg { display: block; max-width: 100%; }
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 20px;
+  perspective: 1000px;
 }
 .card {
   background: var(--surface);
@@ -309,8 +310,11 @@ img, svg { display: block; max-width: 100%; }
   border-radius: 8px;
   padding: 24px;
   transition: border-color var(--transition), transform var(--transition);
+  transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateY(var(--ty, 0px));
+  transform-style: preserve-3d;
+  will-change: transform;
 }
-.card:hover { border-color: var(--accent); transform: translateY(-2px); }
+.card:hover { border-color: var(--accent); --ty: -2px; }
 .card .card-marker {
   font-family: var(--font-ui);
   font-size: 12px;
@@ -506,4 +510,5 @@ img, svg { display: block; max-width: 100%; }
   .mem-block { animation: none !important; }
   .hero-tag .dot { animation: none !important; }
   .heap-field__inner { transition: none !important; transform: rotateX(14deg) !important; }
+  .card { transition: border-color var(--transition) !important; transform: none !important; }
 }

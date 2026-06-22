@@ -46,12 +46,15 @@ function renderSimulations(simulations) {
       el('span', { className: 'timestamp' }, [formatTimestamp(sim.updatedAt)]),
     ]);
 
-    const openLink = el('a', { href: `index.html?load=${sim.id}`, className: 'btn-tiny' }, ['Open']);
+    const openLink = el('a', { href: `index.html?load=${sim.id}`, className: 'btn-tiny btn-tiny-primary' }, ['Open']);
+
+    const renameBtn = el('button', { className: 'btn-tiny' }, ['Rename']);
+    renameBtn.addEventListener('click', () => handleRename(sim.id, sim.name));
 
     const deleteBtn = el('button', { className: 'btn-tiny' }, ['Delete']);
     deleteBtn.addEventListener('click', () => handleDelete(sim.id, sim.name));
 
-    const actions = el('div', { className: 'actions' }, [openLink, deleteBtn]);
+    const actions = el('div', { className: 'actions' }, [openLink, renameBtn, deleteBtn]);
     list.appendChild(el('div', { className: 'saved-sim-item' }, [meta, actions]));
   });
 
@@ -67,6 +70,20 @@ async function loadSimulations() {
     simsContainer.appendChild(
       el('p', { className: 'account-signed-out' }, [`Could not load your saved simulations: ${err.message}`])
     );
+  }
+}
+
+async function handleRename(id, currentName) {
+  const newName = window.prompt('Rename simulation:', currentName);
+  if (newName === null) return; // cancelled
+  const trimmed = newName.trim();
+  if (!trimmed || trimmed === currentName) return;
+
+  try {
+    await simulationsApi.update(id, { name: trimmed });
+    await loadSimulations();
+  } catch (err) {
+    window.alert(err.message);
   }
 }
 

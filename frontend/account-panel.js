@@ -77,6 +77,9 @@ function loadSimulation(id) {
 function deleteSimulation(id) {
   return apiRequest(`/api/simulations/${id}`, { method: 'DELETE' });
 }
+function updateSimulation(id, payload) {
+  return apiRequest(`/api/simulations/${id}`, { method: 'PUT', body: payload });
+}
 
 // ── DOM helpers ───────────────────────────────────────────────────
 function el(tag, props = {}, children = []) {
@@ -94,6 +97,17 @@ function formatTimestamp(isoLike) {
   const d = new Date(isoLike.replace(' ', 'T') + 'Z');
   if (Number.isNaN(d.getTime())) return isoLike;
   return d.toLocaleString('en', { dateStyle: 'medium', timeStyle: 'short' });
+}
+
+// simulator.js's log() renders messages via innerHTML (safe in the
+// original app, since every call there only ever passed hardcoded text
+// or numbers). The simulation `name` field is free-text user input with
+// no content restriction beyond length, so any value passed through
+// log() must be escaped first - this is that escaping step.
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
 }
 
 // ── Header auth status ────────────────────────────────────────────
@@ -149,13 +163,19 @@ function renderSavedList(body, simulations) {
         el('span', { className: 'timestamp' }, [formatTimestamp(sim.updatedAt)]),
       ]);
 
-      const loadBtn = el('button', { className: 'btn-tiny' }, ['Load']);
+      const loadBtn = el('button', { className: 'btn-tiny btn-tiny-primary' }, ['Load']);
       loadBtn.addEventListener('click', () => handleLoad(sim.id, sim.name));
+
+      const updateBtn = el('button', { className: 'btn-tiny' }, ['Update']);
+      updateBtn.addEventListener('click', () => handleUpdate(sim.id, sim.name));
+
+      const renameBtn = el('button', { className: 'btn-tiny' }, ['Rename']);
+      renameBtn.addEventListener('click', () => handleRename(sim.id, sim.name));
 
       const deleteBtn = el('button', { className: 'btn-tiny' }, ['Delete']);
       deleteBtn.addEventListener('click', () => handleDelete(sim.id, sim.name));
 
-      const actions = el('div', { className: 'actions' }, [loadBtn, deleteBtn]);
+      const actions = el('div', { className: 'actions' }, [loadBtn, updateBtn, renameBtn, deleteBtn]);
       list.appendChild(el('div', { className: 'saved-sim-item' }, [meta, actions]));
     });
   }
@@ -171,15 +191,22 @@ async function renderSignedIn() {
   if (!body) return;
   body.innerHTML = '';
 
+  // Same stacked label→input→full-width-button pattern as every other
+  // sidebar section (Heap Setup, Allocate, Free) - not a horizontal row.
+  // A horizontal row collided with this app's own `.btn { width: 100% }`
+  // rule and squeezed the input down to a sliver.
+  const label = el('label', {}, ['Snapshot name']);
   const nameInput = el('input', {
     type: 'text',
     id: 'saveNameInput',
-    placeholder: 'Name this snapshot',
+    placeholder: 'e.g. After mark & sweep',
     maxlength: '60',
   });
+  label.appendChild(nameInput);
+  body.appendChild(label);
+
   const saveBtn = el('button', { className: 'btn btn-green' }, ['Save']);
-  const saveRow = el('div', { className: 'save-row' }, [nameInput, saveBtn]);
-  body.appendChild(saveRow);
+  body.appendChild(saveBtn);
 
   saveBtn.addEventListener('click', () => handleSave(nameInput));
 
@@ -207,11 +234,11 @@ async function handleSave(nameInput) {
   try {
     const data = JSON.parse(heap.serialize());
     await saveSimulation(name, data);
-    log(`Saved simulation "${name}" to your account.`, 'io');
+    log(`Saved simulation "${escapeHtml(name)}" to your account.`, 'io');
     nameInput.value = '';
     renderSignedIn();
   } catch (err) {
-    log(err.message, 'err');
+    log(escapeHtml(err.message), 'err');
   }
 }
 
@@ -220,9 +247,45 @@ async function handleLoad(id, name) {
     const { simulation } = await loadSimulation(id);
     heap = VirtualHeap.deserialize(JSON.stringify(simulation.data));
     refresh();
-    log(`Loaded simulation "${name}" from your account.`, 'io');
+    log(`Loaded simulation "${escapeHtml(name)}" from your account.`, 'io');
   } catch (err) {
-    log(err.message, 'err');
+    log(escapeHtml(err.message), 'err');
+  }
+}
+
+async function handleRename(id, currentName) {
+  const newName = window.prompt('Rename simulation:', currentName);
+  if (newName === null) return; // cancelled
+  const trimmed = newName.trim();
+  if (!trimmed) {
+    log('Name cannot be empty.', 'err');
+    return;
+  }
+  if (trimmed === currentName) return; // nothing changed
+
+  try {
+    await updateSimulation(id, { name: trimmed });
+    log(`Renamed "${escapeHtml(currentName)}" to "${escapeHtml(trimmed)}".`, 'io');
+    renderSignedIn();
+  } catch (err) {
+    log(escapeHtml(err.message), 'err');
+  }
+}
+
+async function handleUpdate(id, name) {
+  if (typeof heap === 'undefined' || !heap) {
+    log('Initialize a heap first.', 'err');
+    return;
+  }
+  if (!window.confirm(`Overwrite saved simulation "${name}" with the current heap state?`)) return;
+
+  try {
+    const data = JSON.parse(heap.serialize());
+    await updateSimulation(id, { data });
+    log(`Updated saved simulation "${escapeHtml(name)}" with the current heap state.`, 'io');
+    renderSignedIn();
+  } catch (err) {
+    log(escapeHtml(err.message), 'err');
   }
 }
 
@@ -231,10 +294,10 @@ async function handleDelete(id, name) {
 
   try {
     await deleteSimulation(id);
-    log(`Deleted simulation "${name}".`, 'io');
+    log(`Deleted simulation "${escapeHtml(name)}".`, 'io');
     renderSignedIn();
   } catch (err) {
-    log(err.message, 'err');
+    log(escapeHtml(err.message), 'err');
   }
 }
 
@@ -248,9 +311,9 @@ async function maybeAutoLoad() {
     const { simulation } = await loadSimulation(id);
     heap = VirtualHeap.deserialize(JSON.stringify(simulation.data));
     refresh();
-    log(`Loaded simulation "${simulation.name}" from your account.`, 'io');
+    log(`Loaded simulation "${escapeHtml(simulation.name)}" from your account.`, 'io');
   } catch (err) {
-    log(`Could not load the requested simulation: ${err.message}`, 'err');
+    log(`Could not load the requested simulation: ${escapeHtml(err.message)}`, 'err');
   }
 
   // Clean the URL so refreshing the page doesn't reload it again.

@@ -37,5 +37,6 @@ async function request(path, options = {}) {
 
 export const simulationsApi = {
   list: () => request(''),
+  update: (id, payload) => request(`/${id}`, { method: 'PUT', body: payload }),
   remove: (id) => request(`/${id}`, { method: 'DELETE' }),
 };

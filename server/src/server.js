@@ -2,6 +2,7 @@ import 'dotenv/config';
 import express from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
+import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -38,6 +39,11 @@ app.use(
   })
 );
 
+// ── Compression ──────────────────────────────────────────────────
+// Gzips text responses (HTML/CSS/JS/JSON) on the wire. Biggest single
+// win available here - everything below this line gets compressed.
+app.use(compression());
+
 // ── CORS ─────────────────────────────────────────────────────────
 // Restricted to a single configured origin; credentials enabled for cookies.
 app.use(
@@ -65,14 +71,35 @@ app.use('/api/simulations', express.json({ limit: '256kb' }), simulationsRoutes)
 app.use('/api', (req, res) => res.status(404).json({ error: 'Not found.' }));
 
 // ── Static frontend ──────────────────────────────────────────────
-app.use(express.static(FRONTEND_DIR, { extensions: ['html'], index: false }));
+app.use(
+  express.static(FRONTEND_DIR, {
+    extensions: ['html'],
+    index: false,
+    setHeaders: (res, filePath) => {
+      if (filePath.endsWith('.html')) {
+        // Always revalidate HTML with the server (still allows a fast
+        // 304 via ETag) so a deploy is visible without a hard refresh.
+        res.setHeader('Cache-Control', 'no-cache');
+      } else {
+        // Short cache for CSS/JS - long enough to skip re-downloads
+        // within a session, short enough that the next deploy shows up
+        // within minutes instead of needing a hard refresh. Once this
+        // app is past active iteration, swap to versioned filenames
+        // (e.g. site.css?v=2) and cache much longer.
+        res.setHeader('Cache-Control', 'public, max-age=300');
+      }
+    },
+  })
+);
 
 app.get('/', (req, res) => {
+  res.setHeader('Cache-Control', 'no-cache');
   res.sendFile(path.join(FRONTEND_DIR, 'landing.html'));
 });
 
 // Fallback for unknown frontend routes
 app.use((req, res) => {
+  res.setHeader('Cache-Control', 'no-cache');
   res.status(404).sendFile(path.join(FRONTEND_DIR, 'landing.html'));
 });
 
