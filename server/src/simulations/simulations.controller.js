@@ -50,6 +50,34 @@ export function getOne(req, res, next) {
   }
 }
 
+// ── PUT /api/simulations/:id ────────────────────────────────────
+// Renames the simulation, overwrites its saved data, or both -
+// whichever fields were sent (validated to require at least one).
+export function update(req, res, next) {
+  try {
+    const { id } = req.validatedParams;
+    const { name, data } = req.validated;
+
+    // Same 404-for-both-cases pattern as getOne/remove: don't reveal
+    // whether the row exists but belongs to someone else.
+    const existing = queries.getSimulationOwned.get(id, req.user.id);
+    if (!existing) return res.status(404).json({ error: 'Simulation not found.' });
+
+    if (name !== undefined && data !== undefined) {
+      queries.updateNameAndDataOwned.run(name, JSON.stringify(data), id, req.user.id);
+    } else if (name !== undefined) {
+      queries.updateNameOwned.run(name, id, req.user.id);
+    } else {
+      queries.updateDataOwned.run(JSON.stringify(data), id, req.user.id);
+    }
+
+    const updated = queries.getSimulationOwned.get(id, req.user.id);
+    return res.json({ simulation: toSummary(updated) });
+  } catch (err) {
+    return next(err);
+  }
+}
+
 // ── DELETE /api/simulations/:id ─────────────────────────────────
 export function remove(req, res, next) {
   try {

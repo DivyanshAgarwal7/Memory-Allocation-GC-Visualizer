@@ -41,13 +41,28 @@
 }
 .btn-tiny:hover { border-color: var(--text-dim); color: var(--text); }
 
-/* ── Account section ───────────────────────────────────── */
-#accountSection .save-row {
-  display: flex;
-  gap: 6px;
+/* The primary action in a set of tiny buttons (Load / Open) - same
+   accent treatment used for call-to-action elements elsewhere. */
+.btn-tiny-primary {
+  border-color: var(--accent);
+  color: var(--accent);
 }
-#accountSection .save-row input {
-  flex: 1;
+.btn-tiny-primary:hover {
+  background: rgba(224, 92, 58, 0.1);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ── Account section ───────────────────────────────────── */
+/* accountPanelBody is a plain <div>, not a direct flex child of
+   .control-section, so it doesn't inherit that section's automatic
+   gap spacing. Give it the same flex-column + gap treatment so its
+   children (label, button, saved list) space consistently with the
+   rest of the sidebar. */
+#accountPanelBody {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .account-signed-out {
@@ -62,16 +77,15 @@
   flex-direction: column;
   gap: 6px;
   margin-top: 10px;
-  max-height: 220px;
+  max-height: 260px;
   overflow-y: auto;
 }
 
 .saved-sim-item {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
   gap: 8px;
-  padding: 6px 8px;
+  padding: 10px;
   border: 1px solid var(--border);
   border-radius: var(--radius);
   background: var(--surface2);
@@ -79,26 +93,47 @@
 
 .saved-sim-item .meta {
   display: flex;
-  flex-direction: column;
-  gap: 2px;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
   min-width: 0;
 }
 .saved-sim-item .name {
-  font-size: 11px;
+  font-size: 12px;
+  font-weight: 700;
   color: var(--text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  flex: 1;
+  min-width: 0;
 }
 .saved-sim-item .timestamp {
   font-size: 9px;
   color: var(--text-dim);
+  flex-shrink: 0;
 }
 
-.saved-sim-item .actions {
-  display: flex;
-  gap: 4px;
-  flex-shrink: 0;
+/* Sidebar always has exactly 4 actions (Load/Update/Rename/Delete) -
+   explicit 2x2 grid, not auto-fit (which would land on an uneven
+   3-over-1 split at this container width). */
+#accountSection .saved-sim-item .actions {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+}
+
+/* Dashboard always has exactly 3 actions (Open/Rename/Delete) -
+   single row; the dashboard's wider cards have room for it. */
+.dash-main .saved-sim-item .actions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.saved-sim-item .actions .btn-tiny {
+  text-align: center;
+  padding: 6px 8px;
 }
 
 .saved-sim-empty {
@@ -111,5 +146,5 @@
 .account-limit-note {
   font-size: 10px;
   color: var(--text-dim);
-  margin-top: 6px;
+  margin-top: 10px;
 }

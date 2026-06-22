@@ -59,6 +59,18 @@ export const queries = {
   // bolted on afterward.
   getSimulationOwned:     db.prepare('SELECT * FROM simulations WHERE id = ? AND user_id = ?'),
   deleteSimulationOwned:  db.prepare('DELETE FROM simulations WHERE id = ? AND user_id = ?'),
+
+  // Three fixed variants instead of building SQL dynamically - the
+  // controller picks the right one based on which fields were sent.
+  updateNameOwned: db.prepare(
+    "UPDATE simulations SET name = ?, updated_at = datetime('now') WHERE id = ? AND user_id = ?"
+  ),
+  updateDataOwned: db.prepare(
+    "UPDATE simulations SET data = ?, updated_at = datetime('now') WHERE id = ? AND user_id = ?"
+  ),
+  updateNameAndDataOwned: db.prepare(
+    "UPDATE simulations SET name = ?, data = ?, updated_at = datetime('now') WHERE id = ? AND user_id = ?"
+  ),
 };
 
 export default db;
