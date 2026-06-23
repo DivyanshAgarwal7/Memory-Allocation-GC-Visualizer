@@ -8,7 +8,7 @@ logic — those still work standalone if you want them to.
 
 ```
 memsim-web/
-├── frontend/               # merge these into your existing frontend/ folder
+├── frontend/               # merge these into your existing frontend
 │   ├── landing.html
 │   ├── login.html
 │   ├── signup.html
