@@ -2,7 +2,7 @@
 
 This is a new `frontend/` + `server/` pair that sits alongside your existing
 C++ simulator project. It does **not** touch the C++ code or `simulator.js`'s
-logic — those still work standalone if you want them to.
+logic — those still work standalone if you want them.
 
 ## Structure
 
