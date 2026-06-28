@@ -87,7 +87,7 @@ The hero animation itself is intentionally CSS-only (transforms + animations)
 rather than a Three.js scene — the "balanced" option you picked earlier:
 visually 3D, but adds ~0 KB of extra JS and no WebGL context to spin up.
 
-## Performance pass (task 3)
+## Performance pass
 
 Measured actual file sizes first rather than guessing. Total page weight is
 already small — the largest single file is `css/site.css` at ~14KB
