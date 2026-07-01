@@ -123,14 +123,6 @@
   gap: 6px;
 }
 
-/* Dashboard always has exactly 3 actions (Open/Rename/Delete) -
-   single row; the dashboard's wider cards have room for it. */
-.dash-main .saved-sim-item .actions {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 6px;
-}
-
 .saved-sim-item .actions .btn-tiny {
   text-align: center;
   padding: 6px 8px;
