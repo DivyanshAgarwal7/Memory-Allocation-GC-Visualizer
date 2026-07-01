@@ -6,6 +6,7 @@
   <title>Dashboard — MEM SIM</title>
   <link rel="stylesheet" href="css/site.css" />
   <link rel="stylesheet" href="account-panel.css" />
+  <link rel="stylesheet" href="css/dashboard.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet" />
@@ -27,17 +28,35 @@
   <main class="dash-main">
     <div class="dash-header">
       <h1>Welcome back, <span id="dash-username">…</span></h1>
+      <p class="dash-subhead">Your saved heap states, at a glance.</p>
+    </div>
+
+    <div class="dash-stat-strip" id="dash-stat-strip" aria-hidden="true">
+      <div class="dash-stat">
+        <span class="dash-stat-value" id="stat-count">—</span>
+        <span class="dash-stat-label">Saved</span>
+      </div>
+      <div class="dash-stat">
+        <span class="dash-stat-value" id="stat-util">—</span>
+        <span class="dash-stat-label">Avg utilization</span>
+      </div>
+      <div class="dash-stat">
+        <span class="dash-stat-value" id="stat-last">—</span>
+        <span class="dash-stat-label">Last saved</span>
+      </div>
+    </div>
+
+    <div class="dash-section-head">
+      <h2>Your saved simulations</h2>
+      <a href="index.html" class="btn btn-ghost btn-small">+ New simulation</a>
     </div>
 
     <div id="dash-sims-container">
       <p class="account-signed-out">Loading your saved simulations…</p>
     </div>
-
-    <div class="dash-actions">
-      <a href="index.html" class="btn btn-primary">Open simulator</a>
-    </div>
   </main>
 
+  <script src="js/tilt-cards.js"></script>
   <script type="module" src="js/dashboard.js"></script>
 </body>
 </html>

@@ -1,0 +1,176 @@
+/* ─────────────────────────────────────────────────────────
+   dashboard.css
+   Dashboard-specific visual identity: a status-readout strip and a
+   gallery of saved-simulation cards, each carrying a real miniature
+   heap-bar preview (same visual grammar as the simulator's own
+   "Visual Map") instead of a plain text list.
+───────────────────────────────────────────────────────── */
+
+/* ── Stat strip ────────────────────────────────────────── */
+.dash-stat-strip {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 40px;
+  background: var(--surface);
+}
+.dash-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 18px 12px;
+  border-right: 1px solid var(--border);
+}
+.dash-stat:last-child { border-right: none; }
+.dash-stat-value {
+  font-family: var(--font-ui);
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--text);
+}
+.dash-stat-label {
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+/* ── Section header ────────────────────────────────────── */
+.dash-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.dash-section-head h2 {
+  font-family: var(--font-ui);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+}
+
+/* ── Card gallery ──────────────────────────────────────── */
+.sim-card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  perspective: 1200px;
+}
+
+.sim-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  opacity: 0;
+  animation: sim-card-in 0.5s ease forwards;
+  animation-delay: var(--enter-delay, 0s);
+}
+
+/* animation-fill-mode:forwards locks `transform` to the animation's end
+   value indefinitely - which would silently break tilt-cards.js's hover
+   effect on this same element after the entrance finishes (both want to
+   own `transform`). dashboard.js adds this class on `animationend`,
+   which sets `animation: none` and hands `transform` fully back to
+   .card's normal rule (the one tilt-cards.js's --rx/--ry actually
+   drive), while opacity:1 here (higher specificity than the base
+   .sim-card rule) keeps the card visible once the animation is gone. */
+.sim-card.is-settled {
+  opacity: 1;
+  animation: none;
+}
+
+@keyframes sim-card-in {
+  from { opacity: 0; transform: translateY(14px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); }
+  to   { opacity: 1; transform: translateY(0) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); }
+}
+
+.sim-card-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+.sim-card-name {
+  font-family: var(--font-ui);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sim-card-time {
+  font-size: 10px;
+  color: var(--text-dim);
+  flex-shrink: 0;
+}
+
+/* Miniature version of the simulator's own heap bar - proportional
+   segments built from aggregate stats, not the full block list. */
+.mini-heap-bar {
+  display: flex;
+  height: 26px;
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+}
+.mini-heap-bar__segment {
+  height: 100%;
+}
+.mini-heap-bar__segment.free   { background: var(--surface2); }
+.mini-heap-bar__segment.used   { background: var(--accent); opacity: 0.85; }
+.mini-heap-bar__segment.marked { background: var(--green); opacity: 0.9; }
+
+.sim-card-meta {
+  display: flex;
+  gap: 12px;
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: 0.3px;
+}
+.sim-card-meta strong { color: var(--text); font-weight: 700; }
+
+.sim-card .actions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin-top: auto;
+}
+.sim-card .actions .btn-tiny {
+  text-align: center;
+  padding: 6px 8px;
+}
+
+/* ── Empty state ───────────────────────────────────────── */
+.dash-empty .mini-heap-bar {
+  max-width: 320px;
+  margin: 16px auto 0;
+  opacity: 0.4;
+}
+.dash-empty .mini-heap-bar .mini-heap-bar__segment.used { animation: ghost-pulse 2.4s ease-in-out infinite; }
+
+@keyframes ghost-pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 0.9; }
+}
+
+/* ── Responsive ────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .dash-stat-strip { grid-template-columns: 1fr; }
+  .dash-stat { border-right: none; border-bottom: 1px solid var(--border); }
+  .dash-stat:last-child { border-bottom: none; }
+  .sim-card-grid { grid-template-columns: 1fr; }
+}
+
+/* ── Reduced motion ────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .sim-card { animation: none !important; opacity: 1 !important; }
+  .dash-empty .mini-heap-bar .mini-heap-bar__segment.used { animation: none !important; }
+}

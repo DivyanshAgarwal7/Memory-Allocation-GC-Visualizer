@@ -102,6 +102,7 @@ img, svg { display: block; max-width: 100%; }
 }
 .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
 .btn-block { width: 100%; }
+.btn-small { padding: 8px 14px; font-size: 10px; }
 
 /* ── Top nav ───────────────────────────────────────────── */
 .nav {
@@ -413,6 +414,22 @@ img, svg { display: block; max-width: 100%; }
   text-transform: uppercase;
   color: var(--text-dim);
 }
+/* Optional row that pairs a field's label with a small aside link
+   (e.g. "Forgot password?") on the same line - only used where needed,
+   doesn't affect fields using a plain <label>. */
+.field-label-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+.field-label-row label { margin: 0; }
+.field-aside-link {
+  font-size: 10px;
+  color: var(--text-dim);
+  text-decoration: none;
+}
+.field-aside-link:hover { color: var(--accent); text-decoration: underline; }
 .field input {
   background: var(--surface2);
   border: 1px solid var(--border);
@@ -466,25 +483,25 @@ img, svg { display: block; max-width: 100%; }
 }
 
 /* ─────────────────────────────────────────────────────────
-   Dashboard (minimal post-login page)
+   Dashboard
 ───────────────────────────────────────────────────────── */
 .dash-main {
-  max-width: 720px;
+  max-width: 880px;
   margin-inline: auto;
-  padding: 64px 24px;
+  padding: 56px 24px 80px;
 }
 .dash-header {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 32px;
-  flex-wrap: wrap;
+  margin-bottom: 28px;
 }
 .dash-header h1 {
   font-family: var(--font-ui);
   font-size: 26px;
   font-weight: 800;
+}
+.dash-subhead {
+  color: var(--text-dim);
+  font-size: 13px;
+  margin-top: 4px;
 }
 .dash-empty {
   border: 1px dashed var(--border);
@@ -495,7 +512,6 @@ img, svg { display: block; max-width: 100%; }
   font-size: 13px;
 }
 .dash-empty strong { color: var(--text); display: block; margin-bottom: 6px; font-family: var(--font-ui); }
-.dash-actions { display: flex; gap: 12px; margin-top: 24px; flex-wrap: wrap; }
 
 /* ── Responsive ────────────────────────────────────────── */
 @media (max-width: 860px) {

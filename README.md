@@ -2,20 +2,23 @@
 
 This is a new `frontend/` + `server/` pair that sits alongside your existing
 C++ simulator project. It does **not** touch the C++ code or `simulator.js`'s
-logic — those still work standalone if you want them.
+logic — those still work standalone if you want them to.
 
 ## Structure
 
 ```
 memsim-web/
-├── frontend/               
+├── frontend/               # merge these into your existing frontend/ folder
 │   ├── landing.html
 │   ├── login.html
 │   ├── signup.html
+│   ├── forgot-password.html
+│   ├── reset-password.html
 │   ├── dashboard.html
 │   ├── account-panel.js / account-panel.css
-│   ├── css/site.css
-│   └── js/ (api.js, simulations-api.js, login.js, signup.js, dashboard.js,
+│   ├── css/site.css, css/dashboard.css
+│   └── js/ (api.js, simulations-api.js, login.js, signup.js,
+│            forgot-password.js, reset-password.js, dashboard.js,
 │            heap-field.js, tilt-cards.js)
 └── server/                  # drop this folder next to backend/ and frontend/
     ├── package.json
@@ -87,7 +90,7 @@ The hero animation itself is intentionally CSS-only (transforms + animations)
 rather than a Three.js scene — the "balanced" option you picked earlier:
 visually 3D, but adds ~0 KB of extra JS and no WebGL context to spin up.
 
-## Performance pass
+## Performance pass (task 3)
 
 Measured actual file sizes first rather than guessing. Total page weight is
 already small — the largest single file is `css/site.css` at ~14KB
@@ -123,7 +126,7 @@ Your checklist assumes a Node app with a database — that infrastructure
 |---|---|
 | Secrets in `.env`, never in frontend | ✅ done |
 | `.gitignore` excludes `.env*` | ✅ done |
-| Rate limiting on auth endpoints | ✅ done (5/15min) |
+| Rate limiting on auth endpoints | ✅ done (5/15min — login, signup, forgot/reset-password) |
 | Rate limiting on general API | ✅ done (60/min, covers `/api/simulations` too) |
 | Server-side input validation (zod) | ✅ done — including a strict schema for saved-simulation data |
 | Parameterized DB queries | ✅ done (better-sqlite3 prepared statements, ownership checks built into the SQL itself) |
@@ -166,10 +169,86 @@ pattern (`dashboard.js`, `login.js`, `signup.js`, the block-table renderer in
 `textContent` or numeric-only values guaranteed by server-side zod
 validation.
 
+## Dashboard redesign
+
+The dashboard previously reused the sidebar's cramped list-item styling.
+Redesigned it as its own page with a real visual identity, built around the
+one idea that's actually true to this product: a saved simulation isn't
+just a name and a date, it's a heap *state*, so it should look like one.
+
+- **Stat strip** at the top: total saved, average utilization across all
+  saves, and how recently you last saved — a real status readout, not
+  decoration.
+- **Card gallery**: each saved simulation gets a miniature version of the
+  simulator's own "Visual Map" bar (free/used/marked segments, proportional
+  to actual bytes), plus block count, utilization %, and allocation
+  strategy. You can recognize a save by its shape, the same way you'd
+  recognize it in the simulator itself, instead of reading a timestamp.
+- **3D card tilt + staggered entrance**: extends `tilt-cards.js` (built for
+  the landing page) to cards created dynamically after an async fetch —
+  `tilt-cards.js` now exposes `window.applyCardTilt(el)` for exactly this
+  case, since its original load-time-only DOM scan would have silently
+  missed every dashboard card (they don't exist yet when that script runs).
+  Cards fade/rise in with a staggered delay, then hand `transform` cleanly
+  back to the hover-tilt logic once the entrance animation finishes (a
+  `.is-settled` class swap — `animation-fill-mode: forwards` would
+  otherwise permanently lock `transform` and silently kill the hover effect).
+- **Server-side preview stats**: a new `computePreview()` in the
+  simulations controller — the same usedMemory/freeMemory/fragmentation
+  math as `VirtualHeap` in `simulator.js`, computed from the stored
+  snapshot — returns only aggregate numbers per simulation (bytes used,
+  marked, free, block count, strategy), never the raw block array, so a
+  list of 20 simulations stays lightweight even if any one of them has
+  thousands of blocks.
+
+## Password reset
+
+Real forgot-password / reset-password flow, not a stub:
+
+- `forgot-password.html` → `POST /api/auth/forgot-password` → always returns
+  the same generic message regardless of whether the email has an account
+  (a different response per case would let an attacker enumerate which
+  emails are registered here).
+- If the email does match an account, a single-use token is generated
+  (`crypto.randomBytes(32)`), only its SHA-256 hash is stored in the
+  database (same principle as `password_hash` — a DB leak alone shouldn't
+  let someone reset accounts), with a 30-minute expiry.
+- The raw token goes out as a link via `server/src/utils/mailer.js`. **No
+  email service is configured by default** — with no `SMTP_*` vars set in
+  `.env`, the link is logged to the server console instead, so the whole
+  flow is testable with zero setup. Set real `SMTP_HOST`/`SMTP_USER`/
+  `SMTP_PASS` (see `.env.example`) to send actual emails via `nodemailer` —
+  no code change needed, `mailer.js` picks it up automatically.
+- `reset-password.html` reads `?token=...` from the URL, submits the new
+  password to `POST /api/auth/reset-password`. A successful reset also
+  clears any account lockout (strong proof of ownership) and the token is
+  single-use (cleared on success).
+- Both endpoints sit behind the same `authLimiter` (5 requests / 15 min per
+  IP) your original checklist specified for password-reset endpoints
+  specifically.
+
+**Known scope limit, stated plainly:** resetting a password does not force
+other active sessions to log out. The existing access/refresh tokens (JWT,
+15 min / 7 days) keep working until they naturally expire. Doing this
+properly needs a token-version field threaded through every token
+verification — a real change to the auth model, not a small addition — so
+it's deferred rather than silently half-built. If someone's account is
+actually compromised, this matters; for accidental-password-leak
+self-service resets, it's a minor gap.
+
+**I could not run `npm install` end-to-end to verify this boots.**
+`better-sqlite3` needs `node-gyp` to compile a native module, which needs to
+download Node headers from `nodejs.org` — a domain my sandbox can't reach.
+Every new/changed file passes `node --check` (real syntax validation) and I
+traced every code path by hand, but "the full request cycle actually works"
+is unverified by me this round. This is a sandbox limitation, not a problem
+with the dependency choice — `npm install` should work normally for you.
+
 ## Scoped out for now (explicit, not forgotten)
 
 - Sharing a saved simulation, or any multi-user features.
-- Password reset / email verification.
+- Email verification on signup (anyone can sign up with any email address
+  right now — the new password-reset flow doesn't change that).
 - Admin or multi-user roles — not relevant for a single-user simulator.
 - Rename/Update currently use `window.prompt()` / `window.confirm()` for
   simplicity — fine functionally, but a proper inline-edit UI and a custom

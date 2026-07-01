@@ -6,6 +6,40 @@ function toSummary(row) {
   return { id: row.id, name: row.name, createdAt: row.created_at, updatedAt: row.updated_at };
 }
 
+// Same math as VirtualHeap.usedMemory()/freeMemory()/fragmentationRatio()
+// in simulator.js, computed here from the stored snapshot. Returns only
+// aggregate numbers - never the raw block array - so the dashboard can
+// render a proportional preview without shipping potentially thousands
+// of block objects just for a list view.
+function computePreview(dataJson) {
+  const heap = JSON.parse(dataJson);
+  let usedBytes = 0;
+  let markedBytes = 0;
+  let largestFree = 0;
+
+  for (const b of heap.blocks) {
+    if (!b.isFree) {
+      usedBytes += b.size;
+      if (b.marked) markedBytes += b.size;
+    } else if (b.size > largestFree) {
+      largestFree = b.size;
+    }
+  }
+
+  const freeBytes = heap.totalSize - usedBytes;
+  const fragmentationPercent = freeBytes === 0 ? 0 : Math.round((1 - largestFree / freeBytes) * 100);
+
+  return {
+    totalSize: heap.totalSize,
+    usedBytes,
+    freeBytes,
+    markedBytes,
+    blockCount: heap.blocks.length,
+    fragmentationPercent,
+    strategyKey: heap.strategyKey,
+  };
+}
+
 // ── POST /api/simulations ───────────────────────────────────────
 export function create(req, res, next) {
   try {
@@ -30,7 +64,8 @@ export function create(req, res, next) {
 export function list(req, res, next) {
   try {
     const rows = queries.listSimulationsByUser.all(req.user.id);
-    return res.json({ simulations: rows.map(toSummary) });
+    const simulations = rows.map((row) => ({ ...toSummary(row), preview: computePreview(row.data) }));
+    return res.json({ simulations });
   } catch (err) {
     return next(err);
   }
